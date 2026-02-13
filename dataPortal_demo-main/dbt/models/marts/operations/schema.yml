@@ -1,0 +1,214 @@
+version: 2
+
+models:
+  # ────────────────────────────────────────────
+  # ops_order_fulfillment
+  # ────────────────────────────────────────────
+  - name: ops_order_fulfillment
+    description: >
+      Order fulfillment status tracking by date and status. Shows order counts,
+      total value, avg items per order, and size bucket distribution
+      (Large/Medium/Small) per day per status. Drives daily ops standup
+      and fulfillment SLA monitoring.
+    group: operations_analytics
+    access: public
+
+    config:
+      tags: ["active", "operations", "tier-1"]
+      materialized: table
+
+    meta:
+      maintainer_email: jordan.blake@jaffle-shop.com
+      listeners:
+        - ops-team@jaffle-shop.com
+        - data-alerts@jaffle-shop.com
+      business_unit: "Operations"
+      model_type: "SQL"
+      schedule: "Daily at 06:30 AM UTC"
+      schedule_cron: "30 6 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: jordan.blake@jaffle-shop.com
+      approved_date: "2024-06-15"
+      observe_in_airflow: true
+      sla_hours: 1
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # ops_return_analysis
+  # ────────────────────────────────────────────
+  - name: ops_return_analysis
+    description: >
+      Monthly return analysis with customer segment breakdown. Filters to
+      returned/return_pending orders and tracks return count, returned value,
+      avg return value, VIP returns, and first-order returns. Critical for
+      identifying quality issues and at-risk customer segments.
+    group: operations_analytics
+    access: public
+
+    config:
+      tags: ["active", "operations", "tier-1"]
+      materialized: table
+
+    meta:
+      maintainer_email: jordan.blake@jaffle-shop.com
+      listeners:
+        - ops-team@jaffle-shop.com
+        - sofia.gutierrez@jaffle-shop.com
+        - data-alerts@jaffle-shop.com
+      business_unit: "Operations"
+      model_type: "SQL"
+      schedule: "Daily at 06:30 AM UTC"
+      schedule_cron: "30 6 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: jordan.blake@jaffle-shop.com
+      approved_date: "2024-06-15"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # ops_inventory_velocity
+  # ────────────────────────────────────────────
+  - name: ops_inventory_velocity
+    description: >
+      Product demand velocity tiers by month: Fast Moving (>=10 units),
+      Medium Moving (>=5), Slow Moving (<5). Includes units sold, revenue,
+      order count, avg rating, and margin percentage. Drives inventory
+      replenishment planning and warehouse allocation.
+    group: operations_analytics
+    access: public
+
+    config:
+      tags: ["active", "operations", "tier-1"]
+      materialized: table
+
+    meta:
+      maintainer_email: jordan.blake@jaffle-shop.com
+      listeners:
+        - ops-team@jaffle-shop.com
+        - supply-chain@jaffle-shop.com
+      business_unit: "Operations"
+      model_type: "SQL"
+      schedule: "Daily at 06:45 AM UTC"
+      schedule_cron: "45 6 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: jordan.blake@jaffle-shop.com
+      approved_date: "2024-06-15"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # ops_category_mix
+  # ────────────────────────────────────────────
+  - name: ops_category_mix
+    description: >
+      Category revenue and volume share analysis by month. Calculates each
+      category's revenue_share_pct and volume_share_pct relative to monthly
+      totals. Supports product assortment decisions and category manager
+      performance reviews.
+    group: operations_analytics
+    access: public
+
+    config:
+      tags: ["active", "operations", "tier-2"]
+      materialized: table
+
+    meta:
+      maintainer_email: jordan.blake@jaffle-shop.com
+      listeners:
+        - ops-team@jaffle-shop.com
+      business_unit: "Operations"
+      model_type: "SQL"
+      schedule: "Daily at 06:45 AM UTC"
+      schedule_cron: "45 6 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: jordan.blake@jaffle-shop.com
+      approved_date: "2024-07-01"
+      observe_in_airflow: true
+      sla_hours: 3
+      tier: 2
+
+  # ────────────────────────────────────────────
+  # ops_customer_lifetime_value
+  # ────────────────────────────────────────────
+  - name: ops_customer_lifetime_value
+    description: >
+      Customer LTV estimation based on order frequency and average value.
+      Calculates avg_days_between_orders, estimated_annual_orders, and
+      estimated_annual_value using purchase gap analysis. Includes RFM
+      score, segment, and geographic context per customer.
+    group: operations_analytics
+    access: public
+
+    config:
+      tags: ["active", "operations", "tier-1"]
+      materialized: table
+
+    meta:
+      maintainer_email: jordan.blake@jaffle-shop.com
+      listeners:
+        - ops-team@jaffle-shop.com
+        - sofia.gutierrez@jaffle-shop.com
+        - marcus.chen@jaffle-shop.com
+      business_unit: "Operations"
+      model_type: "SQL"
+      schedule: "Daily at 07:00 AM UTC"
+      schedule_cron: "0 7 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: jordan.blake@jaffle-shop.com
+      approved_date: "2024-06-15"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # ops_daily_kpi_dashboard
+  # ────────────────────────────────────────────
+  - name: ops_daily_kpi_dashboard
+    description: >
+      Daily KPI dashboard with running totals and 7-day moving averages.
+      Surfaces cumulative_revenue, cumulative_orders, revenue_7day_avg,
+      and orders_7day_avg alongside daily metrics. Primary executive
+      operational dashboard source table.
+    group: operations_analytics
+    access: public
+
+    config:
+      tags: ["active", "operations", "tier-1"]
+      materialized: table
+
+    meta:
+      maintainer_email: jordan.blake@jaffle-shop.com
+      listeners:
+        - ops-team@jaffle-shop.com
+        - exec-team@jaffle-shop.com
+        - data-alerts@jaffle-shop.com
+      business_unit: "Operations"
+      model_type: "SQL"
+      schedule: "Daily at 06:30 AM UTC"
+      schedule_cron: "30 6 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: jordan.blake@jaffle-shop.com
+      approved_date: "2024-06-15"
+      observe_in_airflow: true
+      sla_hours: 1
+      tier: 1

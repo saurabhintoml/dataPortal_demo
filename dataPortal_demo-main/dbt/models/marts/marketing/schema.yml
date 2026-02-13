@@ -1,0 +1,209 @@
+version: 2
+
+models:
+  # ────────────────────────────────────────────
+  # marketing_customer_cohorts
+  # ────────────────────────────────────────────
+  - name: marketing_customer_cohorts
+    description: >
+      Customer cohort retention analysis by first-order month. Tracks active
+      customers, order count, cohort revenue, and avg order value across
+      period_numbers (months since first purchase). Essential for measuring
+      customer retention and LTV trends.
+    group: marketing_analytics
+    access: public
+
+    config:
+      tags: ["active", "marketing", "tier-1"]
+      materialized: table
+
+    meta:
+      maintainer_email: sofia.gutierrez@jaffle-shop.com
+      listeners:
+        - marketing-team@jaffle-shop.com
+        - cmo@jaffle-shop.com
+        - data-alerts@jaffle-shop.com
+      business_unit: "Marketing"
+      model_type: "SQL"
+      schedule: "Daily at 07:30 AM UTC"
+      schedule_cron: "30 7 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-06-30"
+      approved: true
+      approved_by: sofia.gutierrez@jaffle-shop.com
+      approved_date: "2024-07-01"
+      observe_in_airflow: true
+      sla_hours: 3
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # marketing_segment_performance
+  # ────────────────────────────────────────────
+  - name: marketing_segment_performance
+    description: >
+      Revenue and order metrics by customer segment (VIP/Regular/New/Inactive)
+      and spend tier (High/Medium/Low). Includes avg RFM score and return
+      rate per segment. Powers personalized campaign targeting.
+    group: marketing_analytics
+    access: public
+
+    config:
+      tags: ["active", "marketing", "tier-1"]
+      materialized: table
+
+    meta:
+      maintainer_email: sofia.gutierrez@jaffle-shop.com
+      listeners:
+        - marketing-team@jaffle-shop.com
+      business_unit: "Marketing"
+      model_type: "SQL"
+      schedule: "Daily at 07:30 AM UTC"
+      schedule_cron: "30 7 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-06-30"
+      approved: true
+      approved_by: sofia.gutierrez@jaffle-shop.com
+      approved_date: "2024-07-01"
+      observe_in_airflow: true
+      sla_hours: 3
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # marketing_geo_performance
+  # ────────────────────────────────────────────
+  - name: marketing_geo_performance
+    description: >
+      Geographic performance metrics for regional marketing targeting. Shows
+      customer count, total orders, revenue, avg spend, VIP percentage, and
+      revenue per customer by state and city. Drives regional ad spend allocation.
+    group: marketing_analytics
+    access: public
+
+    config:
+      tags: ["active", "marketing", "tier-2"]
+      materialized: table
+
+    meta:
+      maintainer_email: sofia.gutierrez@jaffle-shop.com
+      listeners:
+        - marketing-team@jaffle-shop.com
+      business_unit: "Marketing"
+      model_type: "SQL"
+      schedule: "Daily at 07:45 AM UTC"
+      schedule_cron: "45 7 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-06-30"
+      approved: true
+      approved_by: sofia.gutierrez@jaffle-shop.com
+      approved_date: "2024-07-15"
+      observe_in_airflow: true
+      sla_hours: 4
+      tier: 2
+
+  # ────────────────────────────────────────────
+  # marketing_product_popularity
+  # ────────────────────────────────────────────
+  - name: marketing_product_popularity
+    description: >
+      Product popularity rankings with classification: Star Product (high rating
+      + high volume), Solid Performer, Volume Driver, or Niche. Shows % of
+      category units, review counts, and rating tiers. Informs featured
+      product and promotional campaign selection.
+    group: marketing_analytics
+    access: public
+
+    config:
+      tags: ["active", "marketing", "tier-2"]
+      materialized: table
+
+    meta:
+      maintainer_email: sofia.gutierrez@jaffle-shop.com
+      listeners:
+        - marketing-team@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+      business_unit: "Marketing"
+      model_type: "SQL"
+      schedule: "Daily at 07:45 AM UTC"
+      schedule_cron: "45 7 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-06-30"
+      approved: true
+      approved_by: sofia.gutierrez@jaffle-shop.com
+      approved_date: "2024-07-15"
+      observe_in_airflow: true
+      sla_hours: 4
+      tier: 2
+
+  # ────────────────────────────────────────────
+  # marketing_promotion_effectiveness
+  # ────────────────────────────────────────────
+  - name: marketing_promotion_effectiveness
+    description: >
+      Promotion effectiveness measured by orders and revenue during promo
+      validity windows. Maps stg_promotions to fct_orders where order_date
+      falls within valid_from/valid_to and meets min_order_amount threshold.
+      Tracks coupon_usage_amount for ROI calculations.
+    group: marketing_analytics
+    access: public
+
+    config:
+      tags: ["active", "marketing", "tier-2"]
+      materialized: table
+
+    meta:
+      maintainer_email: sofia.gutierrez@jaffle-shop.com
+      listeners:
+        - marketing-team@jaffle-shop.com
+        - marcus.chen@jaffle-shop.com
+      business_unit: "Marketing"
+      model_type: "SQL"
+      schedule: "Daily at 07:45 AM UTC"
+      schedule_cron: "45 7 * * *"
+      status: "active"
+      revised_state: "DRAFT"
+      expiry_date: "2026-12-31"
+      approved: true
+      approved_by: sofia.gutierrez@jaffle-shop.com
+      approved_date: "2024-08-01"
+      observe_in_airflow: true
+      sla_hours: 4
+      tier: 2
+
+  # ────────────────────────────────────────────
+  # marketing_channel_attribution
+  # ────────────────────────────────────────────
+  - name: marketing_channel_attribution
+    description: >
+      Payment channel attribution analysis broken down by customer segment and
+      spend tier. Classifies orders by primary payment channel (Credit Card Only,
+      Coupon Only, Mixed CC+Coupon, Bank Transfer, Gift Card). Helps understand
+      payment preferences across customer segments for targeting.
+    group: marketing_analytics
+    access: public
+
+    config:
+      tags: ["active", "marketing", "tier-2"]
+      materialized: table
+
+    meta:
+      maintainer_email: sofia.gutierrez@jaffle-shop.com
+      listeners:
+        - marketing-team@jaffle-shop.com
+        - marcus.chen@jaffle-shop.com
+      business_unit: "Marketing"
+      model_type: "SQL"
+      schedule: "Daily at 07:45 AM UTC"
+      schedule_cron: "45 7 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-06-30"
+      approved: true
+      approved_by: sofia.gutierrez@jaffle-shop.com
+      approved_date: "2024-08-01"
+      observe_in_airflow: true
+      sla_hours: 4
+      tier: 2

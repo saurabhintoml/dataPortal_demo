@@ -1,0 +1,213 @@
+version: 2
+
+models:
+  # ────────────────────────────────────────────
+  # dim_customers
+  # ────────────────────────────────────────────
+  - name: dim_customers
+    description: >
+      Core customer dimension combining demographics, segments, RFM scores,
+      primary shipping address, and lifetime order metrics. Joins stg_customers
+      with int_customer_segments, int_customer_rfm, int_customer_addresses,
+      and int_customer_order_history. Single source of truth for customer attributes.
+    group: core_analytics
+    access: public
+
+    config:
+      tags: ["active", "core", "tier-1", "dimension"]
+      materialized: table
+
+    meta:
+      maintainer_email: priya.nair@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+        - marcus.chen@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+        - data-alerts@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 06:00 AM UTC"
+      schedule_cron: "0 6 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: priya.nair@jaffle-shop.com
+      approved_date: "2024-05-01"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 1
+
+    columns:
+      - name: customer_id
+        description: Unique customer identifier — primary key
+        tests:
+          - unique
+          - not_null
+
+  # ────────────────────────────────────────────
+  # dim_products
+  # ────────────────────────────────────────────
+  - name: dim_products
+    description: >
+      Core product dimension with reviews, margins, and rating tiers.
+      Joins stg_products with int_product_reviews_agg and int_product_profitability.
+      Classifies products by rating tier (Excellent/Good/Average/Poor).
+    group: core_analytics
+    access: public
+
+    config:
+      tags: ["active", "core", "tier-1", "dimension"]
+      materialized: table
+
+    meta:
+      maintainer_email: priya.nair@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+        - marcus.chen@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 06:00 AM UTC"
+      schedule_cron: "0 6 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: priya.nair@jaffle-shop.com
+      approved_date: "2024-05-01"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 1
+
+    columns:
+      - name: product_id
+        description: Unique product identifier — primary key
+        tests:
+          - unique
+          - not_null
+
+  # ────────────────────────────────────────────
+  # dim_dates
+  # ────────────────────────────────────────────
+  - name: dim_dates
+    description: >
+      Date dimension derived from distinct order dates. Provides year, month,
+      week, day-of-week, day name, is_weekend flag, first-of-month, and quarter.
+      Conformed dimension for all time-based analysis.
+    group: core_analytics
+    access: public
+
+    config:
+      tags: ["active", "core", "tier-1", "dimension"]
+      materialized: table
+
+    meta:
+      maintainer_email: priya.nair@jaffle-shop.com
+      listeners:
+        - data-alerts@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:45 AM UTC"
+      schedule_cron: "45 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: priya.nair@jaffle-shop.com
+      approved_date: "2024-05-01"
+      observe_in_airflow: true
+      sla_hours: 1
+      tier: 1
+
+    columns:
+      - name: date_day
+        description: Calendar date — primary key
+        tests:
+          - unique
+          - not_null
+
+  # ────────────────────────────────────────────
+  # fct_orders
+  # ────────────────────────────────────────────
+  - name: fct_orders
+    description: >
+      Core order fact table at the order grain. Enriches int_orders_enriched
+      with customer name and order_size_bucket classification (Large >=50,
+      Medium >=20, Small). Includes full payment method breakdown.
+    group: core_analytics
+    access: public
+
+    config:
+      tags: ["active", "core", "tier-1", "fact"]
+      materialized: table
+
+    meta:
+      maintainer_email: priya.nair@jaffle-shop.com
+      listeners:
+        - marcus.chen@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+        - sofia.gutierrez@jaffle-shop.com
+        - data-alerts@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 06:00 AM UTC"
+      schedule_cron: "0 6 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: priya.nair@jaffle-shop.com
+      approved_date: "2024-05-01"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 1
+
+    columns:
+      - name: order_id
+        description: Unique order identifier — primary key
+        tests:
+          - unique
+          - not_null
+
+  # ────────────────────────────────────────────
+  # fct_order_items
+  # ────────────────────────────────────────────
+  - name: fct_order_items
+    description: >
+      Order line-item fact table at the item grain. Joins order items with
+      order details and supply costs to calculate line_cost and line_profit
+      per item. Foundation for finance COGS and margin reporting.
+    group: core_analytics
+    access: public
+
+    config:
+      tags: ["active", "core", "tier-1", "fact"]
+      materialized: table
+
+    meta:
+      maintainer_email: priya.nair@jaffle-shop.com
+      listeners:
+        - marcus.chen@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+        - data-alerts@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 06:00 AM UTC"
+      schedule_cron: "0 6 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: priya.nair@jaffle-shop.com
+      approved_date: "2024-05-01"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 1
+
+    columns:
+      - name: order_item_id
+        description: Unique line-item identifier — primary key
+        tests:
+          - unique
+          - not_null

@@ -1,0 +1,152 @@
+version: 2
+
+models:
+  - name: customers
+    description: >
+      Legacy customer summary table with basic info and derived order facts.
+      Combines customer demographics with aggregated order and payment data
+      to produce lifetime value metrics. Superseded by dim_customers in marts/core.
+
+    config:
+      tags: ["active", "legacy", "tier-2"]
+      materialized: table
+
+    meta:
+      # ── Ownership & Contacts ──
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - priya.nair@jaffle-shop.com
+        - data-alerts@jaffle-shop.com
+
+      # ── Business Context ──
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+
+      # ── Scheduling ──
+      schedule: "Daily at 06:00 AM UTC"
+      schedule_cron: "0 6 * * *"
+
+      # ── Governance ──
+      status: "active"
+      revised_state: "DEPRECATED"
+      expiry_date: "2026-06-30"
+      approved: true
+      approved_by: priya.nair@jaffle-shop.com
+      approved_date: "2024-01-15"
+
+      # ── Observability ──
+      observe_in_airflow: true
+      sla_hours: 4
+      tier: 2
+
+    columns:
+      - name: customer_id
+        description: Unique identifier for a customer
+        tests:
+          - unique
+          - not_null
+
+      - name: first_name
+        description: "Customer's first name. PII."
+
+      - name: last_name
+        description: "Customer's last name. PII."
+
+      - name: first_order
+        description: Date (UTC) of a customer's first order
+
+      - name: most_recent_order
+        description: Date (UTC) of a customer's most recent order
+
+      - name: number_of_orders
+        description: Count of the number of orders a customer has placed
+
+      - name: total_order_amount
+        description: Total value (AUD) of a customer's orders
+
+  - name: orders
+    description: >
+      Legacy orders table with basic order info and pivoted payment amounts.
+      Provides order-level payment method breakdowns. Superseded by fct_orders
+      in marts/core.
+
+    config:
+      tags: ["active", "legacy", "tier-2"]
+      materialized: table
+
+    meta:
+      # ── Ownership & Contacts ──
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - priya.nair@jaffle-shop.com
+        - data-alerts@jaffle-shop.com
+
+      # ── Business Context ──
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+
+      # ── Scheduling ──
+      schedule: "Daily at 06:00 AM UTC"
+      schedule_cron: "0 6 * * *"
+
+      # ── Governance ──
+      status: "active"
+      revised_state: "DEPRECATED"
+      expiry_date: "2026-06-30"
+      approved: true
+      approved_by: priya.nair@jaffle-shop.com
+      approved_date: "2024-01-15"
+
+      # ── Observability ──
+      observe_in_airflow: true
+      sla_hours: 4
+      tier: 2
+
+    columns:
+      - name: order_id
+        description: Unique identifier for an order
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        description: Foreign key to the customers table
+        tests:
+          - not_null
+          - relationships:
+              to: ref('customers')
+              field: customer_id
+
+      - name: order_date
+        description: Date (UTC) that the order was placed
+
+      - name: status
+        description: '{{ doc("orders_status") }}'
+        tests:
+          - accepted_values:
+              values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
+
+      - name: amount
+        description: Total amount (AUD) of the order
+        tests:
+          - not_null
+
+      - name: credit_card_amount
+        description: Amount of the order (AUD) paid for by credit card
+        tests:
+          - not_null
+
+      - name: coupon_amount
+        description: Amount of the order (AUD) paid for by coupon
+        tests:
+          - not_null
+
+      - name: bank_transfer_amount
+        description: Amount of the order (AUD) paid for by bank transfer
+        tests:
+          - not_null
+
+      - name: gift_card_amount
+        description: Amount of the order (AUD) paid for by gift card
+        tests:
+          - not_null

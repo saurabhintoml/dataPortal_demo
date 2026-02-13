@@ -1,0 +1,21 @@
+id,name,category,unit_price_cents,created_at
+1,Jaffle Classic,Food,599,2018-01-01
+2,Double Jaffle,Food,899,2018-01-01
+3,Cheese Jaffle,Food,749,2018-01-01
+4,Veggie Jaffle,Food,699,2018-01-01
+5,Breakfast Combo,Food,1299,2018-01-01
+6,Coffee Regular,Beverage,399,2018-01-01
+7,Coffee Large,Beverage,499,2018-01-01
+8,Orange Juice,Beverage,449,2018-01-01
+9,Green Smoothie,Beverage,599,2018-01-01
+10,Jaffle Tote,Merchandise,1999,2018-01-01
+11,Jaffle Mug,Merchandise,1499,2018-01-01
+12,Gift Card 20,Gift,2000,2018-01-01
+13,Gift Card 50,Gift,5000,2018-01-01
+14,Side Salad,Food,449,2018-01-01
+15,Soup of Day,Food,599,2018-01-01
+16,Chocolate Jaffle,Food,799,2018-01-01
+17,Banana Jaffle,Food,649,2018-01-01
+18,Kids Jaffle,Food,499,2018-01-01
+19,Jaffle Bundle,Food,2499,2018-01-01
+20,Seasonal Special,Food,899,2018-01-01

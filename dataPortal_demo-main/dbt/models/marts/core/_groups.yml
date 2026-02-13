@@ -1,0 +1,8 @@
+version: 2
+
+groups:
+  - name: core_analytics
+    owner:
+      name: "Priya Nair"
+      email: priya.nair@jaffle-shop.com
+      slack: "#core-data"

@@ -1,0 +1,550 @@
+version: 2
+
+models:
+  # ────────────────────────────────────────────
+  # int_order_items_with_products
+  # ────────────────────────────────────────────
+  - name: int_order_items_with_products
+    description: >
+      Enriches order line items with product name and category by joining
+      stg_order_items to stg_products. Foundation for order totals and
+      category performance analysis.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - priya.nair@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:15 AM UTC"
+      schedule_cron: "15 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-15"
+      observe_in_airflow: false
+      sla_hours: 1
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # int_order_totals
+  # ────────────────────────────────────────────
+  - name: int_order_totals
+    description: >
+      Order-level aggregates from line items including total items, quantity,
+      subtotal, and distinct category count. Feeds into int_orders_enriched.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - priya.nair@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:15 AM UTC"
+      schedule_cron: "15 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-15"
+      observe_in_airflow: false
+      sla_hours: 1
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # int_order_payments_pivoted
+  # ────────────────────────────────────────────
+  - name: int_order_payments_pivoted
+    description: >
+      Pivots payments by method (credit_card, coupon, bank_transfer, gift_card)
+      for each order using Jinja loop. Includes total_payment_amount and
+      payment_count per order.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - marcus.chen@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:15 AM UTC"
+      schedule_cron: "15 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-15"
+      observe_in_airflow: false
+      sla_hours: 1
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # int_orders_enriched
+  # ────────────────────────────────────────────
+  - name: int_orders_enriched
+    description: >
+      Central enriched order model combining stg_orders with item totals and
+      payment breakdowns. Adds is_completed and is_returned boolean flags.
+      Core dependency for customer history, daily/monthly aggregates.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - priya.nair@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:20 AM UTC"
+      schedule_cron: "20 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-15"
+      observe_in_airflow: false
+      sla_hours: 1
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # int_customer_order_history
+  # ────────────────────────────────────────────
+  - name: int_customer_order_history
+    description: >
+      Per-customer lifetime order metrics: first/last order dates, lifetime
+      spend, average order value, completed vs returned counts. Feeds
+      segments, RFM, and repeat customer models.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - priya.nair@jaffle-shop.com
+        - sofia.gutierrez@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:25 AM UTC"
+      schedule_cron: "25 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-15"
+      observe_in_airflow: false
+      sla_hours: 1
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # int_customer_addresses
+  # ────────────────────────────────────────────
+  - name: int_customer_addresses
+    description: >
+      Filters to primary shipping address per customer. Provides city, state,
+      zip_code for geographic analysis and dim_customers enrichment.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-2"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:30 AM UTC"
+      schedule_cron: "30 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-15"
+      observe_in_airflow: false
+      sla_hours: 2
+      tier: 2
+
+  # ────────────────────────────────────────────
+  # int_product_order_summary
+  # ────────────────────────────────────────────
+  - name: int_product_order_summary
+    description: >
+      Product-level sales metrics: times ordered, total units sold, total
+      revenue, average line total, and unique customer count. Feeds
+      product profitability and popularity models.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - marcus.chen@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:20 AM UTC"
+      schedule_cron: "20 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-15"
+      observe_in_airflow: false
+      sla_hours: 1
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # int_product_reviews_agg
+  # ────────────────────────────────────────────
+  - name: int_product_reviews_agg
+    description: >
+      Aggregated review metrics per product: average rating, review count,
+      min/max rating, and positive (>=4) vs negative (<=2) review counts.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-2"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:30 AM UTC"
+      schedule_cron: "30 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-04-20"
+      observe_in_airflow: false
+      sla_hours: 2
+      tier: 2
+
+  # ────────────────────────────────────────────
+  # int_product_profitability
+  # ────────────────────────────────────────────
+  - name: int_product_profitability
+    description: >
+      Product margin analysis combining unit price, supply cost, and sales
+      volume. Calculates unit_margin, margin_pct, total_cost, and gross_profit
+      per product. Critical for finance product margin reporting.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - marcus.chen@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:25 AM UTC"
+      schedule_cron: "25 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-15"
+      observe_in_airflow: false
+      sla_hours: 1
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # int_customer_segments
+  # ────────────────────────────────────────────
+  - name: int_customer_segments
+    description: >
+      Customer segmentation by behavior: VIP (>=4 orders, >=50 spend),
+      Regular (>=2 orders), New (1 order), Inactive. Also classifies
+      spend_tier (High/Medium/Low) and computes return_rate.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+        - priya.nair@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:30 AM UTC"
+      schedule_cron: "30 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-04-01"
+      observe_in_airflow: false
+      sla_hours: 1
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # int_daily_orders
+  # ────────────────────────────────────────────
+  - name: int_daily_orders
+    description: >
+      Daily order aggregation: order count, daily revenue, avg order value,
+      items sold, unique customers, and completed/returned counts.
+      Feeds monthly rollups and the daily KPI dashboard.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - jordan.blake@jaffle-shop.com
+        - marcus.chen@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:25 AM UTC"
+      schedule_cron: "25 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-15"
+      observe_in_airflow: false
+      sla_hours: 1
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # int_monthly_orders
+  # ────────────────────────────────────────────
+  - name: int_monthly_orders
+    description: >
+      Monthly rollup of daily order metrics: total orders, monthly revenue,
+      avg order value, items sold, completed/returned counts, and return rate.
+      Feeds finance monthly summary.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - marcus.chen@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:30 AM UTC"
+      schedule_cron: "30 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-15"
+      observe_in_airflow: false
+      sla_hours: 1
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # int_payment_method_analysis
+  # ────────────────────────────────────────────
+  - name: int_payment_method_analysis
+    description: >
+      Payment method performance by month: transaction count, order count,
+      total/avg/min/max amounts per method. Used by finance payment mix
+      and marketing channel attribution.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-2"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - marcus.chen@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:30 AM UTC"
+      schedule_cron: "30 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-04-01"
+      observe_in_airflow: false
+      sla_hours: 2
+      tier: 2
+
+  # ────────────────────────────────────────────
+  # int_category_performance
+  # ────────────────────────────────────────────
+  - name: int_category_performance
+    description: >
+      Product category performance by month: order count, units sold, category
+      revenue, unique customers, and avg line value. Drives ops category mix
+      and marketing product popularity.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-2"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - jordan.blake@jaffle-shop.com
+        - sofia.gutierrez@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:30 AM UTC"
+      schedule_cron: "30 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-04-01"
+      observe_in_airflow: false
+      sla_hours: 2
+      tier: 2
+
+  # ────────────────────────────────────────────
+  # int_customer_rfm
+  # ────────────────────────────────────────────
+  - name: int_customer_rfm
+    description: >
+      RFM (Recency, Frequency, Monetary) scoring for customers. Calculates
+      recency_days relative to latest order, then scores each dimension
+      1-5. Used by dim_customers and marketing segment analysis.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-2"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:35 AM UTC"
+      schedule_cron: "35 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-04-01"
+      observe_in_airflow: false
+      sla_hours: 2
+      tier: 2
+
+  # ────────────────────────────────────────────
+  # int_state_demographics
+  # ────────────────────────────────────────────
+  - name: int_state_demographics
+    description: >
+      Customer demographics and order metrics aggregated by state and city.
+      Combines addresses, segments, and order history to produce customer
+      counts, total revenue, and VIP/New customer breakdowns per geography.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-2"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:35 AM UTC"
+      schedule_cron: "35 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-04-01"
+      observe_in_airflow: false
+      sla_hours: 2
+      tier: 2
+
+  # ────────────────────────────────────────────
+  # int_repeat_customers
+  # ────────────────────────────────────────────
+  - name: int_repeat_customers
+    description: >
+      Classifies customers as repeat vs one-time and assigns loyalty tiers:
+      Champion (>=5 orders), Loyal (>=3), Repeat (2), One-time (1).
+      Includes completion_rate for quality tracking.
+    group: data_engineering_intermediate
+
+    config:
+      tags: ["active", "intermediate", "tier-2"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:35 AM UTC"
+      schedule_cron: "35 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-04-01"
+      observe_in_airflow: false
+      sla_hours: 2
+      tier: 2

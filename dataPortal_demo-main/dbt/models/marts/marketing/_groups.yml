@@ -1,0 +1,8 @@
+version: 2
+
+groups:
+  - name: marketing_analytics
+    owner:
+      name: "Sofia Gutierrez"
+      email: sofia.gutierrez@jaffle-shop.com
+      slack: "#marketing-data"

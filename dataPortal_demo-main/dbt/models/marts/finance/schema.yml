@@ -1,0 +1,175 @@
+version: 2
+
+models:
+  # ────────────────────────────────────────────
+  # finance_daily_revenue
+  # ────────────────────────────────────────────
+  - name: finance_daily_revenue
+    description: >
+      Daily revenue report with day-over-day change tracking. Combines
+      int_daily_orders with int_payment_method_analysis to surface order
+      count, revenue, avg order value, items sold, and revenue_change
+      from the prior day. Primary daily financial health check.
+    group: finance_analytics
+    access: public
+
+    config:
+      tags: ["active", "finance", "tier-1"]
+      materialized: table
+
+    meta:
+      maintainer_email: marcus.chen@jaffle-shop.com
+      listeners:
+        - finance-team@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+        - data-alerts@jaffle-shop.com
+      business_unit: "Finance"
+      model_type: "SQL"
+      schedule: "Daily at 07:00 AM UTC"
+      schedule_cron: "0 7 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-06-30"
+      approved: true
+      approved_by: marcus.chen@jaffle-shop.com
+      approved_date: "2024-06-01"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # finance_monthly_summary
+  # ────────────────────────────────────────────
+  - name: finance_monthly_summary
+    description: >
+      Monthly P&L style summary combining int_monthly_orders with fct_order_items
+      COGS. Reports gross_revenue, total_cogs, gross_profit, gross_margin_pct,
+      avg order value, and return rate. Board-level financial reporting model.
+    group: finance_analytics
+    access: public
+
+    config:
+      tags: ["active", "finance", "tier-1"]
+      materialized: table
+
+    meta:
+      maintainer_email: marcus.chen@jaffle-shop.com
+      listeners:
+        - finance-team@jaffle-shop.com
+        - cfo@jaffle-shop.com
+        - data-alerts@jaffle-shop.com
+      business_unit: "Finance"
+      model_type: "SQL"
+      schedule: "Daily at 07:00 AM UTC"
+      schedule_cron: "0 7 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-06-30"
+      approved: true
+      approved_by: marcus.chen@jaffle-shop.com
+      approved_date: "2024-06-01"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # finance_payment_mix
+  # ────────────────────────────────────────────
+  - name: finance_payment_mix
+    description: >
+      Payment method distribution and percentage of monthly revenue.
+      Shows transaction_count, order_count, total_amount, avg_amount,
+      and pct_of_monthly_revenue per method. Informs treasury and
+      payment processing cost optimization.
+    group: finance_analytics
+    access: public
+
+    config:
+      tags: ["active", "finance", "tier-2"]
+      materialized: table
+
+    meta:
+      maintainer_email: marcus.chen@jaffle-shop.com
+      listeners:
+        - finance-team@jaffle-shop.com
+      business_unit: "Finance"
+      model_type: "SQL"
+      schedule: "Daily at 07:15 AM UTC"
+      schedule_cron: "15 7 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-06-30"
+      approved: true
+      approved_by: marcus.chen@jaffle-shop.com
+      approved_date: "2024-06-15"
+      observe_in_airflow: true
+      sla_hours: 3
+      tier: 2
+
+  # ────────────────────────────────────────────
+  # finance_product_margins
+  # ────────────────────────────────────────────
+  - name: finance_product_margins
+    description: >
+      Product-level margin analysis joining int_product_profitability with
+      int_product_reviews_agg. Classifies products as High/Medium/Low Margin
+      (>=50%, >=30%, <30%). Includes rating context for investment decisions.
+    group: finance_analytics
+    access: public
+
+    config:
+      tags: ["active", "finance", "tier-1"]
+      materialized: table
+
+    meta:
+      maintainer_email: marcus.chen@jaffle-shop.com
+      listeners:
+        - finance-team@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+      business_unit: "Finance"
+      model_type: "SQL"
+      schedule: "Daily at 07:00 AM UTC"
+      schedule_cron: "0 7 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-06-30"
+      approved: true
+      approved_by: marcus.chen@jaffle-shop.com
+      approved_date: "2024-06-01"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 1
+
+  # ────────────────────────────────────────────
+  # finance_customer_revenue_bands
+  # ────────────────────────────────────────────
+  - name: finance_customer_revenue_bands
+    description: >
+      Customer distribution across revenue bands ($0, $1-24, $25-49, $50-74,
+      $75-99, $100+) for financial planning. Shows customer count, band
+      total revenue, avg spend, avg orders, and activity date range per band.
+    group: finance_analytics
+    access: public
+
+    config:
+      tags: ["active", "finance", "tier-2"]
+      materialized: table
+
+    meta:
+      maintainer_email: marcus.chen@jaffle-shop.com
+      listeners:
+        - finance-team@jaffle-shop.com
+        - sofia.gutierrez@jaffle-shop.com
+      business_unit: "Finance"
+      model_type: "SQL"
+      schedule: "Daily at 07:15 AM UTC"
+      schedule_cron: "15 7 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-06-30"
+      approved: true
+      approved_by: marcus.chen@jaffle-shop.com
+      approved_date: "2024-06-15"
+      observe_in_airflow: true
+      sla_hours: 3
+      tier: 2

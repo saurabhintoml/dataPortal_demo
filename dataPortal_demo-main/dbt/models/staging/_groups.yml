@@ -1,0 +1,8 @@
+version: 2
+
+groups:
+  - name: data_engineering
+    owner:
+      name: "Alex Rivera"
+      email: alex.rivera@jaffle-shop.com
+      slack: "#data-engineering"

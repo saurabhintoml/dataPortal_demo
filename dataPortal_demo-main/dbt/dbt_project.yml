@@ -1,0 +1,74 @@
+name: 'jaffle_shop'
+
+config-version: 2
+version: '0.1'
+
+profile: 'jaffle_shop'
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analysis"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets:
+    - "target"
+    - "dbt_modules"
+    - "logs"
+
+require-dbt-version: [">=1.0.0", "<2.0.0"]
+
+models:
+  jaffle_shop:
+      materialized: table
+
+      # ── Legacy root-level models ──
+      +tags: ["active"]
+      +meta:
+        business_unit: "Data Engineering"
+        status: "active"
+
+      # ── Staging layer ──
+      staging:
+        materialized: view
+        +tags: ["active", "staging"]
+        +meta:
+          business_unit: "Data Engineering"
+          status: "active"
+
+      # ── Intermediate layer ──
+      intermediate:
+        materialized: view
+        +tags: ["active", "intermediate"]
+        +meta:
+          business_unit: "Data Engineering"
+          status: "active"
+
+      # ── Mart layer ──
+      marts:
+        materialized: table
+        core:
+          materialized: table
+          +tags: ["active", "core", "tier-1"]
+          +meta:
+            business_unit: "Data Engineering"
+            status: "active"
+        finance:
+          materialized: table
+          +tags: ["active", "finance", "tier-1"]
+          +meta:
+            business_unit: "Finance"
+            status: "active"
+        marketing:
+          materialized: table
+          +tags: ["active", "marketing", "tier-2"]
+          +meta:
+            business_unit: "Marketing"
+            status: "active"
+        operations:
+          materialized: table
+          +tags: ["active", "operations", "tier-1"]
+          +meta:
+            business_unit: "Operations"
+            status: "active"

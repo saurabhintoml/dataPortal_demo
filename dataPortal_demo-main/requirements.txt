@@ -1,0 +1,7 @@
+# Airflow additional Python dependencies
+# dbt-snowflake - required for running dbt against Snowflake
+dbt-snowflake>=1.7.0,<2.0.0
+# Snowflake provider for Airflow connection
+apache-airflow-providers-snowflake>=5.0.0
+# Astronomer Cosmos - translate dbt projects into Airflow DAGs (per-model / per-test tasks)
+astronomer-cosmos[dbt-snowflake]>=1.4.0

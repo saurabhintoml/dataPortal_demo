@@ -1,0 +1,362 @@
+version: 2
+
+models:
+  # ────────────────────────────────────────────
+  # stg_customers
+  # ────────────────────────────────────────────
+  - name: stg_customers
+    description: >
+      Staged customer data from raw_customers seed. Renames id to customer_id
+      and selects first_name/last_name. Foundation for all customer-related models.
+    group: data_engineering
+
+    config:
+      tags: ["active", "staging", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - priya.nair@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:00 AM UTC"
+      schedule_cron: "0 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-02-01"
+      observe_in_airflow: true
+      sla_hours: 1
+      tier: 1
+
+    columns:
+      - name: customer_id
+        description: Unique customer identifier (renamed from raw id)
+        tests:
+          - unique
+          - not_null
+
+  # ────────────────────────────────────────────
+  # stg_orders
+  # ────────────────────────────────────────────
+  - name: stg_orders
+    description: >
+      Staged order data from raw_orders seed. Renames user_id to customer_id and
+      surfaces order_date and status. Drives the order fact pipeline.
+    group: data_engineering
+
+    config:
+      tags: ["active", "staging", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - priya.nair@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:00 AM UTC"
+      schedule_cron: "0 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-02-01"
+      observe_in_airflow: true
+      sla_hours: 1
+      tier: 1
+
+    columns:
+      - name: order_id
+        description: Unique order identifier (renamed from raw id)
+        tests:
+          - unique
+          - not_null
+      - name: status
+        description: Current order fulfillment status
+        tests:
+          - accepted_values:
+              values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
+
+  # ────────────────────────────────────────────
+  # stg_payments
+  # ────────────────────────────────────────────
+  - name: stg_payments
+    description: >
+      Staged payment data with amount converted from cents to dollars.
+      Each row is a single payment transaction linked to an order.
+    group: data_engineering
+
+    config:
+      tags: ["active", "staging", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - marcus.chen@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:00 AM UTC"
+      schedule_cron: "0 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-02-01"
+      observe_in_airflow: true
+      sla_hours: 1
+      tier: 1
+
+    columns:
+      - name: payment_id
+        description: Unique payment transaction identifier
+        tests:
+          - unique
+          - not_null
+      - name: payment_method
+        description: Method of payment used for this transaction
+        tests:
+          - accepted_values:
+              values: ['credit_card', 'coupon', 'bank_transfer', 'gift_card']
+
+  # ────────────────────────────────────────────
+  # stg_products
+  # ────────────────────────────────────────────
+  - name: stg_products
+    description: >
+      Staged product catalog with unit_price_cents converted to dollars.
+      Includes product name, category, and creation timestamp.
+    group: data_engineering
+
+    config:
+      tags: ["active", "staging", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:00 AM UTC"
+      schedule_cron: "0 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-10"
+      observe_in_airflow: true
+      sla_hours: 1
+      tier: 1
+
+    columns:
+      - name: product_id
+        description: Unique product identifier
+        tests:
+          - unique
+          - not_null
+      - name: product_category
+        description: Product category classification
+        tests:
+          - accepted_values:
+              values: ['Food', 'Beverage', 'Merchandise', 'Gift']
+
+  # ────────────────────────────────────────────
+  # stg_order_items
+  # ────────────────────────────────────────────
+  - name: stg_order_items
+    description: >
+      Staged order line items with unit_price_cents converted to dollars and
+      calculated line_total (quantity * unit_price). Grain: one row per line item.
+    group: data_engineering
+
+    config:
+      tags: ["active", "staging", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - priya.nair@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:00 AM UTC"
+      schedule_cron: "0 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-10"
+      observe_in_airflow: true
+      sla_hours: 1
+      tier: 1
+
+    columns:
+      - name: order_item_id
+        description: Unique line-item identifier
+        tests:
+          - unique
+          - not_null
+
+  # ────────────────────────────────────────────
+  # stg_addresses
+  # ────────────────────────────────────────────
+  - name: stg_addresses
+    description: >
+      Staged customer addresses with boolean is_primary flag (converted from int).
+      Includes city, state, zip_code, and address_type for geographic analysis.
+    group: data_engineering
+
+    config:
+      tags: ["active", "staging", "tier-2"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:30 AM UTC"
+      schedule_cron: "30 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-10"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 2
+
+    columns:
+      - name: address_id
+        description: Unique address identifier
+        tests:
+          - unique
+          - not_null
+
+  # ────────────────────────────────────────────
+  # stg_promotions
+  # ────────────────────────────────────────────
+  - name: stg_promotions
+    description: >
+      Staged promotions and discount codes. Converts min_order_cents to dollars.
+      Includes validity window (valid_from/valid_to) and discount percentage.
+    group: data_engineering
+
+    config:
+      tags: ["active", "staging", "tier-2"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:30 AM UTC"
+      schedule_cron: "30 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-04-15"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 2
+
+    columns:
+      - name: promotion_id
+        description: Unique promotion identifier
+        tests:
+          - unique
+          - not_null
+
+  # ────────────────────────────────────────────
+  # stg_reviews
+  # ────────────────────────────────────────────
+  - name: stg_reviews
+    description: >
+      Staged product reviews with ratings (1-5 scale). Renames created_at
+      to reviewed_at. Links reviews to product, customer, and order.
+    group: data_engineering
+
+    config:
+      tags: ["active", "staging", "tier-2"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - sofia.gutierrez@jaffle-shop.com
+        - jordan.blake@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:30 AM UTC"
+      schedule_cron: "30 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-04-15"
+      observe_in_airflow: true
+      sla_hours: 2
+      tier: 2
+
+    columns:
+      - name: review_id
+        description: Unique review identifier
+        tests:
+          - unique
+          - not_null
+
+  # ────────────────────────────────────────────
+  # stg_supply_costs
+  # ────────────────────────────────────────────
+  - name: stg_supply_costs
+    description: >
+      Staged product supply costs for margin calculations. Converts cost_cents
+      to dollars. Includes effective date range for cost versioning.
+    group: data_engineering
+
+    config:
+      tags: ["active", "staging", "tier-1"]
+      materialized: view
+
+    meta:
+      maintainer_email: alex.rivera@jaffle-shop.com
+      listeners:
+        - marcus.chen@jaffle-shop.com
+      business_unit: "Data Engineering"
+      model_type: "SQL"
+      schedule: "Daily at 05:00 AM UTC"
+      schedule_cron: "0 5 * * *"
+      status: "active"
+      revised_state: "RENEWED"
+      expiry_date: "2027-12-31"
+      approved: true
+      approved_by: alex.rivera@jaffle-shop.com
+      approved_date: "2024-03-10"
+      observe_in_airflow: true
+      sla_hours: 1
+      tier: 1
+
+    columns:
+      - name: supply_cost_id
+        description: Unique supply cost record identifier
+        tests:
+          - unique
+          - not_null

@@ -1,0 +1,8 @@
+version: 2
+
+groups:
+  - name: operations_analytics
+    owner:
+      name: "Jordan Blake"
+      email: jordan.blake@jaffle-shop.com
+      slack: "#ops-data"

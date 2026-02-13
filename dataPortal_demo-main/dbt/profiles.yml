@@ -1,0 +1,31 @@
+jaffle_shop:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "KT95190.ap-south-1.aws"
+      user: "DBT_USER"
+      password: "DbtUser#2026!Secure"
+      role: "DBT_ROLE"
+      warehouse: "DBT_WH"
+      database: "ANALYTICS"
+      schema: "STAGING"
+      threads: 4
+      client_session_keep_alive: false
+      query_tag: "dbt_airflow"
+
+snowflake:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "KT95190.ap-south-1.aws"
+      user: "DBT_USER"
+      password: "DbtUser#2026!Secure"
+      role: "DBT_ROLE"
+      warehouse: "DBT_WH"
+      database: "ANALYTICS"
+      schema: "STAGING"
+      threads: 4
+      client_session_keep_alive: false
+      query_tag: "dbt_airflow"

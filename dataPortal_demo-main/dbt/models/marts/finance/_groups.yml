@@ -1,0 +1,8 @@
+version: 2
+
+groups:
+  - name: finance_analytics
+    owner:
+      name: "Marcus Chen"
+      email: marcus.chen@jaffle-shop.com
+      slack: "#finance-data"
